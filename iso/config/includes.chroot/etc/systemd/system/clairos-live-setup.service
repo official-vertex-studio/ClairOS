@@ -1,0 +1,13 @@
+[Unit]
+Description=Prepare le compte de l'image live ClairOS
+After=live-config.service
+Before=display-manager.service
+ConditionKernelCommandLine=boot=live
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/lib/clairos/installer/live-setup.sh
+
+[Install]
+WantedBy=multi-user.target

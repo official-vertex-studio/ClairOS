@@ -1,0 +1,153 @@
+name: Construire ClairOS
+
+# Se lance à chaque modification de la branche principale, sur une étiquette "v*" (publication)
+# ou à la demande (onglet Actions > Construire ClairOS > Run workflow).
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write      # joindre l'ISO à une publication (Release)
+  pages: write         # publier le dépôt de mises à jour
+  id-token: write
+
+concurrency:
+  group: clairos-build
+  cancel-in-progress: false
+
+env:
+  # Adresse publique du dépôt de mises à jour (GitHub Pages). Modifiable dans
+  # Settings > Secrets and variables > Actions > Variables (CLAIROS_REPO_URL).
+  CLAIROS_REPO_URL: ${{ vars.CLAIROS_REPO_URL || format('https://{0}.github.io/{1}/apt', github.repository_owner, github.event.repository.name) }}
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1. Application + paquets .deb + dépôt apt signé
+  # ------------------------------------------------------------------
+  packages:
+    runs-on: ubuntu-latest
+    container: debian:trixie
+    steps:
+      - name: Outils de compilation
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl git build-essential pkg-config file patchelf \
+            libwebkit2gtk-4.1-dev libgtk-3-dev libsoup-3.0-dev libssl-dev librsvg2-dev libxdo-dev \
+            apt-utils gnupg xz-utils gzip
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Vérifier la clé de signature
+        env:
+          KEY: ${{ secrets.CLAIROS_GPG_PRIVATE_KEY }}
+        run: |
+          [ -n "$KEY" ] || { echo "::error::Secret CLAIROS_GPG_PRIVATE_KEY absent. Voir LISEZMOI.md, étape 3."; exit 1; }
+          [ -f repo/keyring/clairos-archive-keyring.asc ] || { echo "::error::repo/keyring/clairos-archive-keyring.asc absent. Voir LISEZMOI.md, étape 3."; exit 1; }
+
+      - name: Rust
+        run: |
+          curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri
+
+      - name: Compiler l'application
+        working-directory: desktop
+        run: |
+          npm ci
+          npx tauri build --no-bundle
+
+      - name: Fabriquer les paquets .deb
+        env:
+          BUILD_SUFFIX: "+b${{ github.run_number }}"
+        run: bash tools/build-debs.sh
+
+      - name: Fabriquer le dépôt apt signé
+        env:
+          KEY: ${{ secrets.CLAIROS_GPG_PRIVATE_KEY }}
+        run: |
+          printf '%s' "$KEY" > /tmp/key.b64
+          CLAIROS_GPG_PRIVATE_KEY_FILE=/tmp/key.b64 bash tools/build-apt-repo.sh dist/debs dist/site
+          rm -f /tmp/key.b64
+          cp repo/keyring/clairos-archive-keyring.asc dist/site/
+          cat > dist/site/index.html <<'EOF'
+          <!doctype html><meta charset="utf-8"><title>ClairOS</title>
+          <h1>ClairOS</h1><p>Dépôt de mises à jour de ClairOS (utilisé automatiquement par le système).</p>
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debs
+          path: dist/debs/*.deb
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+
+  # ------------------------------------------------------------------
+  # 2. Publication du dépôt de mises à jour (GitHub Pages)
+  # ------------------------------------------------------------------
+  publish-updates:
+    needs: packages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  # ------------------------------------------------------------------
+  # 3. Image ISO (live-build dans un conteneur Debian privilégié)
+  # ------------------------------------------------------------------
+  iso:
+    needs: packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Libérer de la place sur le serveur
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: debs
+          path: dist/debs
+
+      - name: Construire l'ISO
+        run: |
+          docker run --rm --privileged -v "$PWD":/work -w /work debian:trixie bash -euxc '
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+              live-build debootstrap squashfs-tools xorriso isolinux syslinux syslinux-common \
+              grub-pc-bin grub-efi-amd64-bin grub-efi-amd64-signed shim-signed mtools dosfstools \
+              zsync rsync ca-certificates gnupg debian-archive-keyring file dpkg-dev
+            bash tools/build-iso.sh dist/debs dist
+          '
+          ls -lh dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clairos-iso
+          path: |
+            dist/*.iso
+            dist/*.sha256
+          compression-level: 0
+
+      - name: Joindre l'ISO à la publication
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.iso
+            dist/*.sha256

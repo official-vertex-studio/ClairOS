@@ -1,0 +1,6 @@
+# ClairOS : l'application (comptes du groupe « clairos ») peut lancer ces outils en root,
+# sans mot de passe. L'accès est protégé par le mot de passe administrateur de l'application.
+Cmnd_Alias CLAIROS_ADMIN = /usr/lib/clairos/admin-shell "", \
+                           /usr/lib/clairos/clairos-update check, \
+                           /usr/lib/clairos/clairos-update upgrade
+%clairos ALL=(root) NOPASSWD: CLAIROS_ADMIN

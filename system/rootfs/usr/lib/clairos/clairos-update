@@ -1,0 +1,108 @@
+#!/bin/bash
+# Outil de mise à jour de ClairOS (droits root), appelé par l'application avec sudo :
+#   clairos-update check     apt-get update + simulation, résultat lisible par l'application
+#   clairos-update upgrade   lance la mise à niveau dans un service systemd séparé
+#   clairos-update _run      (interne) exécute la mise à niveau
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export LC_ALL=C DEBIAN_FRONTEND=noninteractive
+
+STATE_DIR=${CLAIROS_STATE_DIR:-/var/lib/clairos}
+STATUS_FILE=$STATE_DIR/update-status
+LOG_DIR=${CLAIROS_LOG_DIR:-/var/log/clairos}
+LOG_FILE=$LOG_DIR/update.log
+UNIT=clairos-os-upgrade
+LOCK=/run/clairos-update.lock
+SELF=/usr/lib/clairos/clairos-update
+APT_OPTS=(-o DPkg::Lock::Timeout=300 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o Acquire::Retries=2)
+
+[ "$(id -u)" -eq 0 ] || { echo "Doit être lancé avec sudo." >&2; exit 1; }
+
+reboot_needed() {
+    [ -e /run/reboot-required ] && return 0
+    local running newest
+    running=$(uname -r)
+    newest=$(ls -1 /boot/vmlinuz-* 2>/dev/null | sed 's|.*/vmlinuz-||' | sort -V | tail -n1)
+    [ -n "$newest" ] && [ "$newest" != "$running" ]
+}
+
+write_status() { # état message redémarrage(0|1)
+    local tmp
+    mkdir -p "$STATE_DIR"
+    tmp=$(mktemp "$STATE_DIR/.status.XXXXXX") || return 1
+    printf 'state=%s\nmessage=%s\nreboot=%s\nupdated=%s\n' "$1" "$2" "${3:-0}" "$(date +%s)" > "$tmp"
+    chmod 644 "$tmp"
+    mv -f "$tmp" "$STATUS_FILE"
+}
+
+cmd_check() {
+    if systemctl is-active --quiet "$UNIT.service" 2>/dev/null; then
+        printf 'ERROR\tbusy\n'; return 0
+    fi
+    local out
+    if ! out=$(apt-get "${APT_OPTS[@]}" update 2>&1); then
+        if grep -q "Could not get lock" <<<"$out"; then printf 'ERROR\tbusy\n'; else printf 'ERROR\tnetwork\n'; fi
+        return 0
+    fi
+    if reboot_needed; then printf 'REBOOT\t1\n'; else printf 'REBOOT\t0\n'; fi
+    apt-get -s dist-upgrade 2>/dev/null | awk '
+        /^Inst / {
+            name = $2; old = ""
+            if ($3 ~ /^\[/) { old = $3; gsub(/[\[\]]/, "", old); new = $4 } else { new = $3 }
+            sub(/^\(/, "", new)
+            printf "PKG\t%s\t%s\t%s\n", name, old, new
+        }
+        /^Remv / { printf "REMV\t%s\n", $2 }'
+}
+
+cmd_upgrade() {
+    if systemctl is-active --quiet "$UNIT.service" 2>/dev/null; then
+        echo "Une mise à jour est déjà en cours." >&2; exit 1
+    fi
+    mkdir -p "$STATE_DIR" "$LOG_DIR"
+    : > "$LOG_FILE"; chmod 644 "$LOG_FILE"
+    write_status running "Démarrage de la mise à jour…" 0
+    if ! systemd-run --quiet --unit="$UNIT" --description="Mise à jour de ClairOS" \
+            --collect --no-block "$SELF" _run; then
+        write_status failed "Impossible de démarrer la mise à jour." 0
+        echo "systemd-run a échoué." >&2; exit 1
+    fi
+}
+
+fail() { echo "ÉCHEC : $1"; write_status failed "$1" 0; exit 1; }
+
+cmd_run() {
+    exec 9>"$LOCK"
+    flock -n 9 || exit 1
+    mkdir -p "$LOG_DIR"
+    exec >>"$LOG_FILE" 2>&1
+    echo "=== Mise à jour de ClairOS : $(date '+%F %T') ==="
+
+    write_status running "Recherche des mises à jour…" 0
+    apt-get "${APT_OPTS[@]}" update || fail "Impossible de contacter le serveur de mises à jour."
+
+    write_status running "Installation des mises à jour…" 0
+    if ! apt-get "${APT_OPTS[@]}" -y -o Dpkg::Options::=--force-confdef \
+            -o Dpkg::Options::=--force-confold dist-upgrade; then
+        dpkg --configure -a
+        apt-get "${APT_OPTS[@]}" -y -f install || true
+        fail "L'installation a rencontré une erreur. Consultez le journal ci-dessous."
+    fi
+
+    write_status running "Nettoyage…" 0
+    apt-get -y autoremove --purge || true
+    apt-get clean || true
+
+    echo "=== Terminé : $(date '+%F %T') ==="
+    if reboot_needed; then
+        write_status "done" "Mise à jour terminée. Un redémarrage est nécessaire." 1
+    else
+        write_status "done" "Mise à jour terminée." 0
+    fi
+}
+
+case "${1:-}" in
+    check)   cmd_check ;;
+    upgrade) cmd_upgrade ;;
+    _run)    cmd_run ;;
+    *) echo "Usage : $0 check|upgrade" >&2; exit 2 ;;
+esac

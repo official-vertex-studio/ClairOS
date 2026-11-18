@@ -1,0 +1,17 @@
+Package: clairos-system
+Version: @VERSION@
+Architecture: all
+Maintainer: Gab9SG <noreply@clairos.invalid>
+Section: metapackages
+Priority: optional
+Installed-Size: @SIZE@
+Depends: clairos-desktop (= @VERSION@), sudo, polkitd, network-manager, wpasupplicant,
+ systemd-timesyncd, dbus-user-session, dbus-x11, xserver-xorg, x11-xserver-utils,
+ x11-utils, openbox, lightdm, lightdm-gtk-greeter, udisks2, udiskie, firefox-esr,
+ firefox-esr-l10n-fr, firefox-esr-l10n-pt-pt, xdg-utils, geoclue-2.0, pipewire-audio,
+ alsa-utils, fonts-dejavu-core, fonts-liberation, fonts-noto-color-emoji,
+ unattended-upgrades, ca-certificates, gnupg, nano, htop, curl, less
+Description: ClairOS - système complet (configuration, session, mises à jour)
+ Ce méta-paquet installe tout ce qui fait de Debian un ClairOS : session plein écran
+ sans barre des tâches, mises à jour automatiques, outils d'administration.
+ Il active aussi le dépôt de mises à jour de ClairOS.

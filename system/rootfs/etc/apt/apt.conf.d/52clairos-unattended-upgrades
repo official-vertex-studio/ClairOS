@@ -1,0 +1,10 @@
+// Installation automatique : correctifs de sécurité Debian (déjà dans 50unattended-upgrades)
+// et mises à jour publiées sur le dépôt ClairOS.
+Unattended-Upgrade::Origins-Pattern {
+    "origin=ClairOS,label=ClairOS";
+};
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+// Mettre "true" pour redémarrer automatiquement la nuit quand c'est nécessaire.
+Unattended-Upgrade::Automatic-Reboot "false";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+Unattended-Upgrade::Automatic-Reboot-Time "04:00";

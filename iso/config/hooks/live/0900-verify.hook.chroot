@@ -1,0 +1,9 @@
+#!/bin/bash
+# Arrête la fabrication tout de suite, avec un message clair, si un élément essentiel manque.
+missing=0
+for p in clairos-system clairos-desktop calamares lightdm openbox network-manager unattended-upgrades; do
+    if ! dpkg -s "$p" >/dev/null 2>&1; then echo "ERREUR : le paquet $p n'est pas installé."; missing=1; fi
+done
+[ -x /usr/bin/clairos-desktop ] || { echo "ERREUR : /usr/bin/clairos-desktop est absent."; missing=1; }
+[ -f /etc/apt/sources.list.d/clairos.sources ] || { echo "ERREUR : dépôt de mises à jour absent."; missing=1; }
+exit $missing

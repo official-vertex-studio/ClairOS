@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+case "$1" in
+remove|deconfigure)
+    update-alternatives --remove firefox /usr/bin/firefox-esr >/dev/null 2>&1 || true
+    ;;
+esac
+exit 0

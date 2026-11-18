@@ -1,0 +1,11 @@
+Package: clairos-desktop
+Version: @VERSION@
+Architecture: amd64
+Maintainer: Gab9SG <noreply@clairos.invalid>
+Section: misc
+Priority: optional
+Installed-Size: @SIZE@
+Depends: libwebkit2gtk-4.1-0, libgtk-3-0t64 | libgtk-3-0, network-manager, xdg-utils
+Recommends: geoclue-2.0, firefox-esr
+Description: ClairOS - bureau simple (application)
+ Le bureau ClairOS : cuisine, météo, actualités, galerie photos et administration.

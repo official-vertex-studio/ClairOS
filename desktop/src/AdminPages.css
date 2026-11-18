@@ -1,0 +1,676 @@
+/* =========================================================
+   ADMINISTRATION — PAGES (réseau, galerie, mises à jour, etc.)
+========================================================= */
+
+.ap-card {
+  background: #ffffff;
+  border: 1px solid #e8ebf1;
+  border-radius: 20px;
+  padding: 24px 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 28px rgba(35, 57, 91, 0.05);
+}
+
+.ap-card.highlight {
+  border-color: #b9ccf5;
+  background: #f7faff;
+}
+
+.ap-card-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 12px;
+  font-size: 19px;
+  color: #25324a;
+}
+
+.ap-muted {
+  color: #7b8699;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 14px;
+}
+
+.ap-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ap-row .ap-card-title {
+  margin-bottom: 8px;
+}
+
+.ap-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ---------- Boutons ---------- */
+
+.ap-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 13px;
+  border: 1px solid #d9dfeb;
+  background: #ffffff;
+  color: #31405c;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.ap-btn:hover:not(:disabled) {
+  background: #f1f5fc;
+  border-color: #b9c6e0;
+}
+
+.ap-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ap-btn.primary {
+  background: #3569d8;
+  border-color: #3569d8;
+  color: #ffffff;
+}
+
+.ap-btn.primary:hover:not(:disabled) {
+  background: #2b5bc3;
+  border-color: #2b5bc3;
+}
+
+.ap-btn.danger {
+  background: #d94b4b;
+  border-color: #d94b4b;
+  color: #ffffff;
+}
+
+.ap-btn.danger:hover:not(:disabled) {
+  background: #c33c3c;
+  border-color: #c33c3c;
+}
+
+.ap-btn.small {
+  padding: 7px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+/* ---------- Messages ---------- */
+
+.ap-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+
+.ap-alert p {
+  margin: 4px 0 0;
+}
+
+.ap-alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ap-alert.error {
+  background: #fdeeee;
+  border-color: #f4c9c9;
+  color: #a03030;
+}
+
+.ap-alert.ok {
+  background: #ecf8f0;
+  border-color: #bfe5cb;
+  color: #25683d;
+}
+
+.ap-alert.info {
+  background: #eef4ff;
+  border-color: #c9daf8;
+  color: #2f4f8f;
+}
+
+.ap-alert code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ---------- Badges ---------- */
+
+.ap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ap-badge.inline {
+  margin-left: 10px;
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.ap-badge.ok {
+  background: #e3f5ea;
+  color: #25683d;
+}
+
+.ap-badge.warn {
+  background: #fff3dc;
+  color: #8a5a00;
+}
+
+.ap-badge.error {
+  background: #fde7e7;
+  color: #a03030;
+}
+
+.ap-badge.info {
+  background: #eaf1ff;
+  color: #2f55a8;
+}
+
+/* ---------- Listes ---------- */
+
+.ap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ap-list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border: 1px solid #edf0f6;
+  border-radius: 15px;
+  background: #fafbfe;
+}
+
+.ap-list-item.column {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.ap-list-line {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ap-item-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #e9f0ff;
+  color: #3569d8;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.ap-item-icon.off {
+  background: #eef0f4;
+  color: #9aa3b4;
+}
+
+.ap-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ap-item-main strong {
+  display: flex;
+  align-items: center;
+  color: #25324a;
+  font-size: 15.5px;
+}
+
+.ap-item-main strong small {
+  color: #8a94a7;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+.ap-item-main span {
+  display: block;
+  margin-top: 3px;
+  color: #7b8699;
+  font-size: 13.5px;
+}
+
+.ap-inline-form {
+  display: flex;
+  gap: 10px;
+}
+
+.ap-inline-form input {
+  flex: 1;
+}
+
+/* ---------- Champs ---------- */
+
+.ap-label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #4b5870;
+}
+
+.ap-input,
+.ap-inline-form input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #d9dfeb;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  color: #25324a;
+  background: #ffffff;
+}
+
+.ap-input:focus,
+.ap-inline-form input:focus {
+  outline: 3px solid rgba(53, 105, 216, 0.25);
+  border-color: #3569d8;
+}
+
+/* ---------- Faits clés (mises à jour) ---------- */
+
+.ap-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 6px 0 14px;
+}
+
+.ap-facts div {
+  padding: 14px 16px;
+  background: #f5f8fe;
+  border-radius: 14px;
+}
+
+.ap-facts span {
+  display: block;
+  font-size: 12.5px;
+  color: #8a94a7;
+  margin-bottom: 5px;
+}
+
+.ap-facts strong {
+  font-size: 16px;
+  color: #25324a;
+  word-break: break-word;
+}
+
+.ap-notes,
+.ap-code {
+  background: #f3f5fa;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: #33415c;
+  margin: 12px 0;
+  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+/* ---------- Miniatures (galerie) ---------- */
+
+.ap-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ap-thumb {
+  position: relative;
+  border: 1px solid #e8ebf1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f5f7fb;
+}
+
+.ap-thumb img,
+.ap-thumb-empty {
+  display: block;
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  background: #e9edf5;
+}
+
+.ap-thumb-caption {
+  padding: 9px 11px 11px;
+  background: #ffffff;
+}
+
+.ap-thumb-caption strong {
+  display: block;
+  font-size: 13px;
+  color: #25324a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ap-thumb-caption span {
+  font-size: 12px;
+  color: #8a94a7;
+}
+
+.ap-thumb-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(37, 50, 74, 0.78);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.ap-thumb-remove:hover:not(:disabled) {
+  background: rgba(37, 50, 74, 0.95);
+}
+
+.ap-thumb-remove.danger:hover:not(:disabled) {
+  background: #d94b4b;
+}
+
+.ap-thumb-confirm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 130px;
+  background: rgba(255, 255, 255, 0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #25324a;
+}
+
+.ap-thumb-confirm div {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- Résultats d'envoi ---------- */
+
+.ap-results {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ap-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.ap-result svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ap-result.added {
+  background: #ecf8f0;
+  color: #25683d;
+}
+
+.ap-result.duplicate {
+  background: #fff6e3;
+  color: #8a5a00;
+}
+
+.ap-result.error {
+  background: #fdeeee;
+  color: #a03030;
+}
+
+/* ---------- Choix (personnalisation) ---------- */
+
+.ap-choice-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.ap-choice {
+  position: relative;
+  min-width: 130px;
+  padding: 14px 18px;
+  border: 2px solid #e1e6f0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #25324a;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ap-choice span {
+  font-size: 12.5px;
+  color: #8a94a7;
+}
+
+.ap-choice:hover {
+  border-color: #b9c6e0;
+}
+
+.ap-choice.active {
+  border-color: #3569d8;
+  background: #f1f6ff;
+}
+
+.ap-choice > svg {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #3569d8;
+}
+
+.ap-choice.wallpaper {
+  min-width: 150px;
+  padding: 10px;
+}
+
+.ap-swatch {
+  width: 100%;
+  height: 70px;
+  border-radius: 11px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 6px;
+}
+
+/* ---------- Interrupteur ---------- */
+
+.ap-switch {
+  width: 54px;
+  height: 30px;
+  border-radius: 999px;
+  border: none;
+  background: #c4cbd9;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.ap-switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.ap-switch.on {
+  background: #3569d8;
+}
+
+.ap-switch.on span {
+  transform: translateX(24px);
+}
+
+/* ---------- Alimentation ---------- */
+
+.ap-power-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.ap-power-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px;
+  border: 1px solid #e8ebf1;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #3569d8;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 8px 28px rgba(35, 57, 91, 0.05);
+}
+
+.ap-power-card strong {
+  color: #25324a;
+  font-size: 18px;
+}
+
+.ap-power-card span {
+  color: #7b8699;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.ap-power-card:hover:not(:disabled) {
+  border-color: #b9c6e0;
+}
+
+.ap-power-card.danger {
+  color: #d94b4b;
+}
+
+/* ---------- Animation ---------- */
+
+.ap-spin {
+  animation: ap-rotate 1s linear infinite;
+}
+
+@keyframes ap-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ---------- Mises à jour : liste des paquets et journal ---------- */
+
+.ap-package-list {
+  list-style: none;
+  margin: 14px 0 6px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.ap-package-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e3e9f6;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #25324a;
+}
+
+.ap-package-list li span {
+  color: #7b8699;
+  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  font-size: 12.5px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.ap-log {
+  max-height: 300px;
+  overflow: auto;
+  font-size: 12.5px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Terminal administrateur (CMD) ---------- */
+
+.ap-terminal-wrap {
+  background: #0f172a;
+  border-radius: 18px;
+  padding: 14px 10px 10px 16px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.25);
+  height: calc(100vh - 360px);
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.ap-terminal {
+  width: 100%;
+  height: 100%;
+}

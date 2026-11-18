@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+case "$1" in
+configure)
+    # Groupe autorisé à utiliser les outils d'administration de l'application.
+    if ! getent group clairos >/dev/null 2>&1; then
+        addgroup --system clairos >/dev/null
+    fi
+    mkdir -p /var/lib/clairos /var/log/clairos
+    chmod 755 /var/lib/clairos /var/log/clairos
+    chmod 440 /etc/sudoers.d/clairos
+    # L'application lance « /usr/bin/firefox » ; Debian fournit firefox-esr.
+    if [ -x /usr/bin/firefox-esr ] && { [ ! -e /usr/bin/firefox ] || [ -L /usr/bin/firefox ]; }; then
+        update-alternatives --install /usr/bin/firefox firefox /usr/bin/firefox-esr 50 >/dev/null 2>&1 || true
+    fi
+    ;;
+esac
+exit 0

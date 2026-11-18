@@ -1,0 +1,45 @@
+#!/bin/bash
+# Session ClairOS : le bureau ClairOS est la seule interface (pas de barre des tâches).
+# Lancée par lightdm via /usr/share/xsessions/clairos.desktop.
+
+# Réglages modifiables par l'administrateur (voir ce fichier pour des exemples).
+[ -r /etc/clairos/session.env ] && . /etc/clairos/session.env
+
+export GDK_BACKEND=x11
+# Évite l'écran blanc de WebKitGTK sur certaines cartes graphiques et machines virtuelles.
+export WEBKIT_DISABLE_DMABUF_RENDERER="${WEBKIT_DISABLE_DMABUF_RENDERER:-1}"
+# Pour xdg-open (liens ouverts depuis l'application).
+export BROWSER="${BROWSER:-firefox-esr}"
+
+# Extinction de l'écran après N minutes d'inactivité (0 = jamais).
+minutes="${CLAIROS_SCREEN_OFF_MINUTES:-30}"
+xset s off
+if [ "$minutes" -gt 0 ] 2>/dev/null; then
+    xset +dpms dpms 0 0 $((minutes * 60))
+else
+    xset -dpms
+fi
+
+# Gestionnaire de fenêtres minimal : fenêtres plein écran, sans barre ni menu.
+openbox --config-file /etc/clairos/openbox/rc.xml &
+
+# Attend que le gestionnaire de fenêtres soit prêt (5 s maximum).
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+    xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q 'window id' && break
+    sleep 0.5
+done
+
+# Montage automatique des clés USB et cartes SD (utilisé par la Galerie).
+if command -v udiskie >/dev/null 2>&1; then
+    udiskie --no-notify --no-tray &
+fi
+
+# L'application est relancée si elle se ferme (ou plante) : l'écran n'est jamais vide.
+fast=0
+while true; do
+    start=$(date +%s)
+    /usr/bin/clairos-desktop
+    if [ $(( $(date +%s) - start )) -lt 5 ]; then fast=$((fast + 1)); else fast=0; fi
+    if [ "$fast" -ge 5 ]; then sleep 20; fast=0; fi
+    sleep 1
+done

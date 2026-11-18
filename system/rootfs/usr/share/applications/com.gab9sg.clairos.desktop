@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ClairOS
+Comment=La technologie, simplement.
+Exec=/usr/bin/clairos-desktop
+Icon=clairos-desktop
+Type=Application
+Categories=Utility;
+NoDisplay=true

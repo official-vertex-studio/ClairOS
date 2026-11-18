@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=Installation de ClairOS
+Exec=/usr/lib/clairos/installer/installer-session
+Type=Application

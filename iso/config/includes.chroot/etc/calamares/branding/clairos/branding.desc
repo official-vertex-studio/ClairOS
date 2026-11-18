@@ -1,0 +1,32 @@
+---
+componentName:  clairos
+welcomeStyleCalamares:   false
+welcomeExpandingLogo:   true
+windowExpanding:    normal
+windowSize: 800px,520px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+strings:
+    productName:         "ClairOS"
+    shortProductName:    "ClairOS"
+    version:             "@VERSION@"
+    shortVersion:        "@VERSION@"
+    versionedName:       "ClairOS @VERSION@"
+    shortVersionedName:  "ClairOS @VERSION@"
+    bootloaderEntryName: "ClairOS"
+    productUrl:          "https://github.com/"
+    supportUrl:          "https://github.com/"
+    knownIssuesUrl:      "https://github.com/"
+    releaseNotesUrl:     "https://github.com/"
+images:
+    productIcon:         "logo.png"
+    productLogo:         "logo.png"
+    productWelcome:      "welcome.png"
+style:
+   SidebarBackground:        "#1f2a44"
+   SidebarText:              "#FFFFFF"
+   SidebarTextCurrent:       "#1f2a44"
+   SidebarBackgroundCurrent: "#ffbf3c"
+slideshow:               "show.qml"
+slideshowAPI: 2

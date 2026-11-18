@@ -1,0 +1,43 @@
+# Démarrage de l'image live
+live-boot
+live-config
+live-config-systemd
+initramfs-tools
+# Langue, clavier, heure
+locales
+console-setup
+keyboard-configuration
+tzdata
+# Matériel : pilotes (firmware) Wi-Fi, graphiques, microcodes
+firmware-linux
+firmware-iwlwifi
+firmware-realtek
+firmware-atheros
+firmware-brcm80211
+intel-microcode
+amd64-microcode
+exfatprogs
+ntfs-3g
+usbutils
+pciutils
+# Installateur (Calamares) et ses outils
+calamares
+libxcb-cursor0
+os-prober
+squashfs-tools
+rsync
+parted
+gdisk
+dosfstools
+e2fsprogs
+# Chargeur de démarrage (BIOS et UEFI, Secure Boot compris)
+grub-common
+grub2-common
+grub-pc-bin
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+efibootmgr
+# Bibliothèques de l'application (le reste vient des dépendances de clairos-system)
+libwebkit2gtk-4.1-0
+libgtk-3-0t64

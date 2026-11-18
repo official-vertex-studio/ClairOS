@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+systemctl set-default graphical.target
+# Le compte administrateur du système n'a pas de mot de passe (connexion root impossible).
+passwd -l root || true
+
+# Groupes utilisés par l'ouverture automatique de session (LightDM).
+for g in nopasswdlogin autologin; do getent group "$g" >/dev/null || groupadd -r "$g"; done
+# Service qui prépare le compte de l'image live avant l'écran de connexion.
+systemctl enable clairos-live-setup.service
+
+# Modules QML utilisés par l'installateur (noms différents selon Qt5/Qt6) : on installe ceux qui existent.
+export DEBIAN_FRONTEND=noninteractive
+for p in qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtquick-controls qml6-module-qtquick-layouts \
+         qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtquick-controls2 qml-module-qtquick-layouts; do
+    if apt-cache show "$p" >/dev/null 2>&1; then apt-get install -y --no-install-recommends "$p" || true; fi
+done

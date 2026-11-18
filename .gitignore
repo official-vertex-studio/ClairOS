@@ -1,0 +1,9 @@
+node_modules
+dist
+target
+desktop/dist
+desktop/node_modules
+desktop/src-tauri/target
+clairos-private-key*
+*.iso
+build.log

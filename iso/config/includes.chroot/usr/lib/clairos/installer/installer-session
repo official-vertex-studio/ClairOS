@@ -1,0 +1,10 @@
+#!/bin/bash
+# Session de l'image live : installateur plein écran. Si on le ferme sans installer,
+# le bureau ClairOS démarre en mode « essai » (rien n'est modifié sur l'ordinateur).
+export GDK_BACKEND=x11 QT_QPA_PLATFORM=xcb
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+xset s off -dpms
+openbox --config-file /etc/clairos/openbox/rc.xml &
+sleep 1
+sudo -E /usr/bin/calamares
+exec /usr/lib/clairos/clairos-session
